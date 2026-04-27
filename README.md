@@ -1,6 +1,12 @@
 # RUL prediction using LSTM for Aircraft Engine
 ## Turbofan Engine RUL Prediction — NASA C-MAPSS
 
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)](https://www.python.org/)
+[![TensorFlow](https://img.shields.io/badge/TensorFlow-2.x-orange?logo=tensorflow)](https://www.tensorflow.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Dataset](https://img.shields.io/badge/Dataset-NASA%20C--MAPSS-green)](https://www.nasa.gov/intelligent-systems-division/discovery-and-systems-health/pcoe/pcoe-data-set-repository/)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/raghav-upadhyay2002/RUL-prediction-using-LSTM-for-Aircraft-Engine/blob/main/code.ipynb)
+
 A deep learning pipeline for **Remaining Useful Life (RUL) prediction** of turbofan engines using the NASA C-MAPSS dataset. The project covers the full ML lifecycle: exploratory data analysis, feature engineering, model training, uncertainty quantification, explainability (XAI), domain adaptation, and an interactive maintenance decision dashboard.
 
 ---
@@ -10,7 +16,9 @@ A deep learning pipeline for **Remaining Useful Life (RUL) prediction** of turbo
 - [Overview](#overview)
 - [Dataset](#dataset)
 - [Project Structure](#project-structure)
+- [Prerequisites / Requirements](#prerequisites--requirements)
 - [Installation](#installation)
+- [Quick Start / Usage](#quick-start--usage)
 - [Pipeline Walkthrough](#pipeline-walkthrough)
 - [Models](#models)
 - [Results](#results)
@@ -20,12 +28,17 @@ A deep learning pipeline for **Remaining Useful Life (RUL) prediction** of turbo
 - [Maintenance Dashboard](#maintenance-dashboard)
 - [Deployment](#deployment)
 - [Ethical Considerations](#ethical-considerations)
+- [Contributing](#contributing)
+- [Acknowledgements](#acknowledgements)
+- [Citation](#citation)
 
 ---
 
 ## Overview
 
 This project tackles the predictive maintenance problem of estimating how many operational cycles remain before a turbofan engine requires maintenance. Using multi-sensor time-series data, four LSTM-based deep learning architectures are trained and benchmarked across all four NASA C-MAPSS sub-datasets. The pipeline goes beyond standard regression by incorporating uncertainty quantification, gradient-based explainability, and an interactive fleet monitoring dashboard.
+
+**Pipeline flow:** EDA → Preprocessing & Feature Engineering → Model Training → XAI → Uncertainty Estimation → Domain Adaptation → Interactive Dashboard
 
 **Key features:**
 - Four LSTM-based architectures benchmarked head-to-head
@@ -41,17 +54,17 @@ This project tackles the predictive maintenance problem of estimating how many o
 
 ## Dataset
 
-**NASA C-MAPSS (Commercial Modular Aero-Propulsion System Simulation)**  
+**NASA C-MAPSS (Commercial Modular Aero-Propulsion System Simulation)**
 Source: [NASA Ames Prognostics Data Repository](https://www.nasa.gov/intelligent-systems-division/discovery-and-systems-health/pcoe/pcoe-data-set-repository/)
 
 The dataset contains run-to-failure sensor readings from simulated turbofan engines across four sub-datasets:
 
 | Sub-dataset | Training Rows | Test Engines | Fault Modes | Operating Conditions |
 |-------------|--------------|--------------|-------------|----------------------|
-| FD001       | 20,631       | 100          | 1           | 1                    |
-| FD002       | 53,759       | 259          | 1           | 6                    |
-| FD003       | 24,720       | 100          | 2           | 1                    |
-| FD004       | 61,249       | 248          | 2           | 6                    |
+| FD001 | 20,631 | 100 | 1 | 1 |
+| FD002 | 53,759 | 259 | 1 | 6 |
+| FD003 | 24,720 | 100 | 2 | 1 |
+| FD004 | 61,249 | 248 | 2 | 6 |
 
 Each record includes 3 operational settings (`op_1–3`) and 21 sensor readings (`s1–s21`). Seven near-zero-variance sensors (`s1, s5, s6, s10, s16, s18, s19`) are dropped, leaving **17 input features**.
 
@@ -61,19 +74,41 @@ Each record includes 3 operational settings (`op_1–3`) and 21 sensor readings 
 
 ## Project Structure
 
+```
+RUL-prediction-using-LSTM-for-Aircraft-Engine/
+├── code.ipynb                  # Main Jupyter/Colab notebook
+├── requirements.txt            # Package versions for local runs
+├── LICENSE
+├── README.md
+└── /content/rul_models/        # Saved outputs (generated at runtime)
+    ├── {arch}_{fd}.keras       # Trained model weights (16 combinations)
+    ├── scalers.pkl             # Fitted StandardScaler objects per sub-dataset
+    ├── metadata.json           # Deployment configuration
+    └── maintenance_schedule.csv  # Per-engine RUL predictions and decisions
+```
 
+---
 
+## Prerequisites / Requirements
 
+The notebook is designed to run in **Google Colab**, where all major dependencies come pre-installed. If you want to run it locally, install the following packages:
 
+| Package | Recommended Version | Purpose |
+|---|---|---|
+| tensorflow | ≥ 2.12 | Model building and training |
+| scikit-learn | ≥ 1.2 | Preprocessing, k-means clustering |
+| numpy | ≥ 1.23 | Numerical operations |
+| pandas | ≥ 1.5 | Data loading and manipulation |
+| matplotlib | ≥ 3.6 | Plotting and visualization |
+| seaborn | ≥ 0.12 | Statistical plots |
+| ipywidgets | ≥ 8.0 | Interactive dashboard |
+| scipy | ≥ 1.10 | Statistical utilities |
 
+For local use, install via:
 
-
-
-**Saved outputs** (to `/content/rul_models/`):
-- `{arch}_{fd}.keras` — trained model weights for all 16 combinations
-- `scalers.pkl` — fitted StandardScaler objects per sub-dataset
-- `metadata.json` — deployment configuration
-- `maintenance_schedule.csv` — per-engine RUL predictions and decisions
+```bash
+pip install tensorflow scikit-learn numpy pandas matplotlib seaborn ipywidgets scipy
+```
 
 ---
 
@@ -81,16 +116,29 @@ Each record includes 3 operational settings (`op_1–3`) and 21 sensor readings 
 
 This project runs entirely in **Google Colab**. No local installation is required.
 
-**Dependencies (pre-installed in Colab):**
+**Dependencies (pre-installed in Colab):** `tensorflow`, `scikit-learn`, `numpy`, `pandas`, `matplotlib`, `seaborn`, `ipywidgets`, `scipy`.
 
+For local environments, see [Prerequisites / Requirements](#prerequisites--requirements) above.
 
-Open the notebook in Colab and run cells sequentially. When Cell 1 prompts for a file upload, provide `CMAPSSData.zip`.
+---
+
+## Quick Start / Usage
+
+1. **Open the notebook in Colab** — click the badge at the top of this README or navigate directly to:
+   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/raghav-upadhyay2002/RUL-prediction-using-LSTM-for-Aircraft-Engine/blob/main/code.ipynb)
+
+2. **Upload the dataset** — when Cell 1 executes and prompts for a file upload, provide `CMAPSSData.zip` (downloaded from the [NASA Prognostics Data Repository](https://www.nasa.gov/intelligent-systems-division/discovery-and-systems-health/pcoe/pcoe-data-set-repository/)).
+
+3. **Run all cells in order** — use *Runtime → Run all* or execute each cell sequentially. The full pipeline (EDA → training → XAI → dashboard) completes in approximately 30–60 minutes on a Colab GPU runtime.
+
+4. **Interact with the dashboard** — once Cell 9 runs, use the ipywidgets sliders and dropdowns to explore per-engine predictions and fleet-wide maintenance recommendations live.
 
 ---
 
 ## Pipeline Walkthrough
 
 ### 1. EDA (Cell 2)
+
 - Engine lifetime distribution and RUL statistics
 - Sensor variance analysis to identify and drop uninformative sensors
 - Pearson correlation of sensors with the cycle index as a degradation proxy
@@ -98,6 +146,7 @@ Open the notebook in Colab and run cells sequentially. When Cell 1 prompts for a
 - Visual degradation trends for sensors `s4` (Bypass Ratio) and `s11` (HPC Outlet Temperature)
 
 ### 2. Preprocessing & Feature Engineering (Cell 3)
+
 - **RUL Labeling:** Piecewise-linear capping at 125 cycles (flattens early-life RUL, then decreases linearly)
 - **Sensor Selection:** 7 low-variance sensors dropped; 17 features retained
 - **Normalization:** Z-score (`StandardScaler`) fitted on training data, applied to test
@@ -106,6 +155,7 @@ Open the notebook in Colab and run cells sequentially. When Cell 1 prompts for a
   - Test: last 30 cycles per engine → one sample per engine
 
 ### 3. Model Training (Cell 5)
+
 - Up to 50 epochs with early stopping (patience = 7)
 - `ReduceLROnPlateau` for adaptive learning rate
 - Best weights restored via `ModelCheckpoint`
@@ -132,26 +182,28 @@ All models use `BatchNormalization`, `Dropout (0.3)`, and `Adam (lr=1e-3)` with 
 
 Test set performance across all architectures and sub-datasets:
 
-| Model           | Dataset | MAE   | RMSE  | NASA Score |
-|-----------------|---------|-------|-------|------------|
-| VanillaLSTM     | FD001   | 12.04 | 15.47 | 498        |
-| VanillaLSTM     | FD002   | 13.04 | 17.34 | 1,749      |
-| VanillaLSTM     | FD003   | 10.42 | 15.26 | 835        |
-| VanillaLSTM     | FD004   | 13.16 | 17.78 | 1,776      |
-| StackedBiLSTM   | FD001   | 11.92 | 15.78 | 507        |
-| StackedBiLSTM   | FD002   | 11.23 | 15.83 | 1,450      |
-| StackedBiLSTM   | FD003   | 10.91 | 15.56 | 578        |
-| StackedBiLSTM   | FD004   | 11.83 | 17.07 | 1,431      |
-| LSTM_Attention  | FD001   | 11.64 | 15.66 | 585        |
-| LSTM_Attention  | FD002   | 12.50 | 16.58 | 1,506      |
-| LSTM_Attention  | FD003   | 11.57 | 15.65 | 744        |
-| LSTM_Attention  | FD004   | 15.06 | 20.41 | 3,069      |
-| CNN_LSTM        | FD001   | 12.93 | 15.87 | 469        |
-| CNN_LSTM        | FD002   | 12.72 | 17.48 | 2,382      |
-| CNN_LSTM        | FD003   | 14.09 | 20.37 | 2,614      |
-| CNN_LSTM        | FD004   | 15.54 | 21.50 | 3,876      |
+| Model | Dataset | MAE | RMSE | NASA Score |
+|---|---|---|---|---|
+| VanillaLSTM | FD001 | 12.04 | 15.47 | 498 |
+| VanillaLSTM | FD002 | 13.04 | 17.34 | 1,749 |
+| VanillaLSTM | FD003 | 10.42 | 15.26 | 835 |
+| VanillaLSTM | FD004 | 13.16 | 17.78 | 1,776 |
+| StackedBiLSTM | FD001 | 11.92 | 15.78 | 507 |
+| StackedBiLSTM | FD002 | 11.23 | 15.83 | 1,450 |
+| StackedBiLSTM | FD003 | 10.91 | 15.56 | 578 |
+| StackedBiLSTM | FD004 | 11.83 | 17.07 | 1,431 |
+| LSTM_Attention | FD001 | 11.64 | 15.66 | 585 |
+| LSTM_Attention | FD002 | 12.50 | 16.58 | 1,506 |
+| LSTM_Attention | FD003 | 11.57 | 15.65 | 744 |
+| LSTM_Attention | FD004 | 15.06 | 20.41 | 3,069 |
+| CNN_LSTM | FD001 | 12.93 | 15.87 | 469 |
+| CNN_LSTM | FD002 | 12.72 | 17.48 | 2,382 |
+| CNN_LSTM | FD003 | 14.09 | 20.37 | 2,614 |
+| CNN_LSTM | FD004 | 15.54 | 21.50 | 3,876 |
 
 **StackedBiLSTM** achieves the most consistent performance across all four datasets. The NASA score penalizes under-predictions (late alarms) exponentially, which is why simpler models sometimes outscore attention-based ones on this metric despite higher MAE.
+
+> **⚠️ Limitations:** C-MAPSS is a *simulated* dataset. The degradation trajectories are synthetically generated and may not reflect the full complexity of real turbofan wear patterns. Results should be treated as a proof-of-concept; production deployment would require validation on real engine telemetry and periodic retraining to account for distribution shift.
 
 ---
 
@@ -159,13 +211,13 @@ Test set performance across all architectures and sub-datasets:
 
 Three complementary XAI methods are implemented in Cell 6:
 
-**1. Temporal Attention Heatmap**  
+**1. Temporal Attention Heatmap**
 Visualizes which timesteps within a 30-cycle window the `LSTM_Attention` model attends to most. Near-failure engines show attention concentrated on the most recent timesteps, while healthy engines distribute attention more broadly.
 
-**2. Gradient-Based Feature Attribution**  
+**2. Gradient-Based Feature Attribution**
 Computes `d(RUL prediction) / d(input features)` via `tf.GradientTape`. Features with higher mean absolute gradient are more influential. The top-3 most influential features are reported per run.
 
-**3. Per-Engine Explanation**  
+**3. Per-Engine Explanation**
 For any individual engine, a combined plot shows its temporal attention bar chart alongside a gradient sensitivity heatmap over the time × feature grid — providing an auditable, human-readable explanation for each maintenance decision.
 
 Outputs saved: `eda_overview.png`, `eda_sensors.png`, `training_curves.png`, `pred_vs_actual.png`, `error_dist.png`, `attention_weights.png`, `xai_attention_heatmap.png`, `xai_feature_attribution.png`, `xai_single_engine.png`
@@ -176,10 +228,10 @@ Outputs saved: `eda_overview.png`, `eda_sensors.png`, `training_curves.png`, `pr
 
 Cell 7 implements two uncertainty quantification techniques:
 
-**Monte Carlo Dropout**  
+**Monte Carlo Dropout**
 Keeps dropout active at inference time. 100 forward passes through `LSTM_Attention` produce a distribution of RUL predictions. Epistemic uncertainty (model uncertainty) and aleatoric uncertainty (data uncertainty) are decomposed from the variance across passes.
 
-**Deep Ensembles**  
+**Deep Ensembles**
 5 independently-trained `VanillaLSTM` models (each with a different random seed) are trained for 15 epochs. Disagreement between ensemble members captures epistemic uncertainty in a more robust way than MC Dropout, especially for out-of-distribution inputs.
 
 Both methods produce `mean ± 2σ` prediction intervals, which are used as the basis for conservative maintenance decisions.
@@ -190,10 +242,10 @@ Both methods produce `mean ± 2σ` prediction intervals, which are used as the b
 
 Cell 8 addresses two generalization challenges:
 
-**Condition-Aware Normalization (FD002/FD004)**  
+**Condition-Aware Normalization (FD002/FD004)**
 FD002 and FD004 contain 6 distinct operating conditions (altitude, Mach, throttle settings). Global Z-score normalization conflates these conditions. A k-means clustering step (k=6) groups rows by operational setting, and a separate `StandardScaler` is fitted per cluster — improving MAE on FD002 compared to global normalization.
 
-**Zero-Shot Cross-Dataset Transfer**  
+**Zero-Shot Cross-Dataset Transfer**
 Models trained on FD001 (1 fault mode, 1 operating condition) are evaluated directly on FD003 (2 fault modes, 1 operating condition) without retraining. The generalization gap across all four architectures is visualized to quantify robustness to unseen fault modes.
 
 ---
@@ -202,11 +254,12 @@ Models trained on FD001 (1 fault mode, 1 operating condition) are evaluated dire
 
 Cell 9 provides two dashboard interfaces:
 
-**Static Dashboard**  
+**Static Dashboard**
 A full-fleet visualization showing predicted RUL ± uncertainty bands for all test engines, with color-coded decision zones (URGENT / SCHEDULE / OK) and a priority-sorted maintenance queue.
 
-**Interactive ipywidgets Dashboard**  
+**Interactive ipywidgets Dashboard**
 Adjust the following parameters live in Colab:
+
 - Engine ID (slider)
 - Model architecture (dropdown)
 - Sub-dataset (dropdown)
@@ -215,10 +268,11 @@ Adjust the following parameters live in Colab:
 
 Click **▶ Predict Engine** to see the MC dropout distribution, sensor input heatmap, and maintenance recommendation for the selected engine. Click **📊 Fleet Overview** for a summary bar chart of all engines at the current threshold settings.
 
-**Decision logic:**  
-`conservative_RUL = mean_RUL - 2σ`  
-- `conservative_RUL < URGENT_THR (10)` → 🔴 **URGENT**  
-- `conservative_RUL < SCHEDULE_THR (30)` → 🟠 **SCHEDULE**  
+**Decision logic:**
+`conservative_RUL = mean_RUL - 2σ`
+
+- `conservative_RUL < URGENT_THR (10)` → 🔴 **URGENT**
+- `conservative_RUL < SCHEDULE_THR (30)` → 🟠 **SCHEDULE**
 - Otherwise → 🟢 **OK**
 
 ---
@@ -227,10 +281,6 @@ Click **▶ Predict Engine** to see the MC dropout distribution, sensor input he
 
 Saved artifacts in `/content/rul_models/`:
 
-
-
-
-
 **Inference pipeline:**
 1. Buffer the last 30 sensor cycles from the engine's ECU stream
 2. Apply the condition-aware `StandardScaler` for the detected operating condition
@@ -238,7 +288,7 @@ Saved artifacts in `/content/rul_models/`:
 4. Compute `mean ± 2σ` and apply decision thresholds
 5. Emit URGENT / SCHEDULE / OK alert to the maintenance system
 
-**Serving options:** TF SavedModel → TF Serving (Docker) → REST API (FastAPI / Flask)  
+**Serving options:** TF SavedModel → TF Serving (Docker) → REST API (FastAPI / Flask)
 **Scaling:** Kubernetes with horizontal pod autoscaling for fleet-wide monitoring
 
 ---
@@ -255,8 +305,49 @@ Saved artifacts in `/content/rul_models/`:
 
 ---
 
+## Contributing
+
+Contributions are welcome! If you'd like to improve this project — whether it's a new architecture, better uncertainty calibration, or documentation fixes — please open an issue or submit a pull request. For major changes, open an issue first to discuss what you'd like to change.
+
+---
+
+## Acknowledgements
+
+- **NASA Ames Research Center** for the publicly available C-MAPSS dataset via the Prognostics Center of Excellence.
+- The **TensorFlow** and **Keras** teams for the deep learning framework.
+- The **scikit-learn** community for preprocessing and clustering utilities.
+- The **ipywidgets** team for the interactive dashboard infrastructure.
+
+---
+
+## Citation
+
+If you use this project or the C-MAPSS dataset in your work, please cite the original dataset paper:
+
+```bibtex
+@inproceedings{saxena2008damage,
+  title     = {Damage Propagation Modeling for Aircraft Engine Run-to-Failure Simulation},
+  author    = {Saxena, Abhinav and Goebel, Kai and Simon, Don and Eklund, Neil},
+  booktitle = {International Conference on Prognostics and Health Management},
+  year      = {2008}
+}
+```
+
+To cite this project:
+
+```bibtex
+@misc{upadhyay2026rul,
+  title     = {RUL Prediction using LSTM for Aircraft Engine},
+  author    = {Upadhyay, Raghav},
+  year      = {2026},
+  url       = {https://github.com/raghav-upadhyay2002/RUL-prediction-using-LSTM-for-Aircraft-Engine}
+}
+```
+
+---
+
 ## License
 
-This project uses the NASA C-MAPSS dataset, which is publicly available for research and educational purposes. Please cite the original dataset when publishing results:
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
 
-> Saxena, A., Goebel, K., Simon, D., & Eklund, N. (2008). *Damage Propagation Modeling for Aircraft Engine Run-to-Failure Simulation*. International Conference on Prognostics and Health Management.
+The NASA C-MAPSS dataset is publicly available for research and educational purposes.
