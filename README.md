@@ -61,3 +61,25 @@ Each record includes 3 operational settings (`op_1–3`) and 21 sensor readings 
 ---
 
 ## Project Structure
+
+
+
+
+
+
+
+
+
+**Saved outputs** (to `/content/rul_models/`):
+- `{arch}_{fd}.keras` — trained model weights for all 16 combinations
+- `scalers.pkl` — fitted StandardScaler objects per sub-dataset
+- `metadata.json` — deployment configuration
+- `maintenance_schedule.csv` — per-engine RUL predictions and decisions
+
+---
+
+## Installation
+
+This project runs entirely in **Google Colab**. No local installation is required.
+
+**Dependencies (pre-installed in Colab):**
