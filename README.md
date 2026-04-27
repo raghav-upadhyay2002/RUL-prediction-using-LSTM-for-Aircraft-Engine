@@ -227,3 +227,37 @@ Click **▶ Predict Engine** to see the MC dropout distribution, sensor input he
 ## Deployment
 
 Saved artifacts in `/content/rul_models/`:
+
+
+
+
+
+**Inference pipeline:**
+1. Buffer the last 30 sensor cycles from the engine's ECU stream
+2. Apply the condition-aware `StandardScaler` for the detected operating condition
+3. Run forward passes through `LSTM_Attention` with `training=True` (MC Dropout, 100 passes)
+4. Compute `mean ± 2σ` and apply decision thresholds
+5. Emit URGENT / SCHEDULE / OK alert to the maintenance system
+
+**Serving options:** TF SavedModel → TF Serving (Docker) → REST API (FastAPI / Flask)  
+**Scaling:** Kubernetes with horizontal pod autoscaling for fleet-wide monitoring
+
+---
+
+## Ethical Considerations
+
+1. **Safety-first uncertainty:** Conservative lower-bound predictions (mean − 2σ) reduce the risk of missing a genuine failure.
+2. **Transparency:** Uncertainty bounds are always reported alongside point estimates — never just a single number.
+3. **Human-in-the-loop:** The model is a decision support tool; all maintenance actions require engineer sign-off.
+4. **Distribution shift:** C-MAPSS is simulated data. Real-engine deployment requires continuous monitoring for model drift and periodic retraining.
+5. **Data privacy:** Sensor streams may contain proprietary operational data; on-premise inference is recommended.
+6. **Fleet equity:** Decision thresholds should be calibrated for engine age, type, and usage history.
+7. **Auditability:** All predictions should be logged with timestamps for EASA/FAA regulatory compliance.
+
+---
+
+## License
+
+This project uses the NASA C-MAPSS dataset, which is publicly available for research and educational purposes. Please cite the original dataset when publishing results:
+
+> Saxena, A., Goebel, K., Simon, D., & Eklund, N. (2008). *Damage Propagation Modeling for Aircraft Engine Run-to-Failure Simulation*. International Conference on Prognostics and Health Management.
