@@ -1,6 +1,5 @@
 # RUL prediction using LSTM for Aircraft Engine
-RUL prediction using LSTM for Aircraft Engine
-# Turbofan Engine RUL Prediction — NASA C-MAPSS
+## Turbofan Engine RUL Prediction — NASA C-MAPSS
 
 A deep learning pipeline for **Remaining Useful Life (RUL) prediction** of turbofan engines using the NASA C-MAPSS dataset. The project covers the full ML lifecycle: exploratory data analysis, feature engineering, model training, uncertainty quantification, explainability (XAI), domain adaptation, and an interactive maintenance decision dashboard.
 
